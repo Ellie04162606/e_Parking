@@ -11,6 +11,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,6 +30,23 @@ class CarPositionServiceImplTest {
 
   @InjectMocks
   CarPositionServiceImpl carPositionService;
+
+  @Test
+  void getAllParkingPosition() {
+    //given
+    ParkingLot parkingLot = new ParkingLot(1, 133, 22, 3, 2, "南方软件园停车场", 8, "珠海市香洲区");
+    List<ParkingPosition> parkingPositionList = new ArrayList<>();
+    parkingPositionList.add(new ParkingPosition(1, 1, 1, 0));
+    parkingPositionList.add(new ParkingPosition(2, 1, 2, 0));
+    parkingPositionList.add(new ParkingPosition(3, 1, 3, 1));
+    Mockito.when(parkingPositionRepository.findAll()).thenReturn(parkingPositionList);
+
+    //when
+    List<ParkingPosition> allParkingPosition = carPositionService.getAllParkingPosition();
+
+    //then
+    assertEquals(parkingPositionList.size(), allParkingPosition.size());
+  }
 
   @Test
   void reserveParkingPosition() {
