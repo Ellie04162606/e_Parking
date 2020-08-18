@@ -25,7 +25,7 @@ public class ParkingLot {
   private int id;
   private double latitude;
   private double longitude;
-  private int capacity;
+  private int capicity;
   @Column(name = "remaining_amount")
   private int remainingAmount;
   private String name;

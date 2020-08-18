@@ -25,8 +25,8 @@ public class CarPositionServiceImpl implements CarPositionService {
   }
 
   @Override
-  public List<ParkingPosition> getAllParkingPosition() {
-    return parkingPositionRepository.findAll();
+  public List<ParkingPosition> getAllParkingPosition(int parkingLotId) {
+    return parkingPositionRepository.findByParkingLotId(parkingLotId);
   }
 
   @Override
@@ -34,12 +34,17 @@ public class CarPositionServiceImpl implements CarPositionService {
   public void reserveParkingPosition(int parkingPositionId) {
     ParkingPosition parkingPosition = parkingPositionRepository.findById(parkingPositionId)
         .orElseThrow(() -> new ParkingLotException(ParkingLotEnum.PARKING_POSITION_NOT_FOUND));
-    ParkingLot parkingLot = parkingLotRepository.findById(parkingPosition.getParkingLotId())
+    ParkingLot parkingLot = parkingLotRepository.findById(parkingPosition.getParkingLot().getId())
         .orElseThrow(() -> new ParkingLotException(ParkingLotEnum.PARKING_LOT_NOT_FOUND));
-    parkingLot.setCapacity(parkingLot.getCapacity() - 1);
-    parkingLot.setRemainingAmount(parkingLot.getRemainingAmount() - 1);
-    parkingLotRepository.save(parkingLot);
-    parkingPosition.setStatus(1);
-    parkingPositionRepository.save(parkingPosition);
+    if (parkingPosition.getStatus() == 0) {
+      parkingLot.setCapicity(parkingLot.getCapicity() - 1);
+      parkingLot.setRemainingAmount(parkingLot.getRemainingAmount() - 1);
+      parkingLotRepository.save(parkingLot);
+      parkingPosition.setStatus(1);
+      parkingPositionRepository.save(parkingPosition);
+    } else {
+      throw new ParkingLotException(ParkingLotEnum.PARKING_POSITION_IS_NOT_EMPTY);
+    }
+
   }
 }

@@ -27,7 +27,8 @@ public class ParkingPosition {
 
   @ManyToOne
   @JoinColumn(name = "parkinglot_id")
-  private int parkingLotId;
+  private ParkingLot parkingLot;
+
   private int parkingNumber;
   private int status;
 

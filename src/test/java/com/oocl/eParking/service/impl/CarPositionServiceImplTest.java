@@ -32,27 +32,27 @@ class CarPositionServiceImplTest {
   CarPositionServiceImpl carPositionService;
 
   @Test
-  void getAllParkingPosition() {
+  void should_return_all_parking_lot_positions_when_get_All_Parking_Position_given_a_parking_in_db() {
     //given
     ParkingLot parkingLot = new ParkingLot(1, 133, 22, 3, 2, "南方软件园停车场", 8, "珠海市香洲区");
     List<ParkingPosition> parkingPositionList = new ArrayList<>();
-    parkingPositionList.add(new ParkingPosition(1, 1, 1, 0));
-    parkingPositionList.add(new ParkingPosition(2, 1, 2, 0));
-    parkingPositionList.add(new ParkingPosition(3, 1, 3, 1));
-    Mockito.when(parkingPositionRepository.findAll()).thenReturn(parkingPositionList);
+    parkingPositionList.add(new ParkingPosition(1, parkingLot, 1, 0));
+    parkingPositionList.add(new ParkingPosition(2, parkingLot, 2, 0));
+    parkingPositionList.add(new ParkingPosition(3, parkingLot, 3, 1));
+    Mockito.when(parkingPositionRepository.findByParkingLotId(parkingLot.getId())).thenReturn(parkingPositionList);
 
     //when
-    List<ParkingPosition> allParkingPosition = carPositionService.getAllParkingPosition();
+    List<ParkingPosition> allParkingPosition = carPositionService.getAllParkingPosition(parkingLot.getId());
 
     //then
     assertEquals(parkingPositionList.size(), allParkingPosition.size());
   }
 
   @Test
-  void reserveParkingPosition() {
+  void should_save_parking_lot_with_decrease_capacity_save_position_with_status_1_when_reserve_Parking_Position_given_a_parking_lot_with_remaining_position() {
     //given
-    ParkingPosition parkingPosition = new ParkingPosition(1, 1, 11, 0);
     ParkingLot parkingLot = new ParkingLot(1, 133, 22, 11, 11, "南方软件园停车场", 8, "珠海市香洲区");
+    ParkingPosition parkingPosition = new ParkingPosition(1, parkingLot, 11, 0);
     Mockito.when(parkingPositionRepository.findById(any(Integer.class))).thenReturn(
         java.util.Optional.of(parkingPosition));
     Mockito.when(parkingLotRepository.findById(any(Integer.class))).thenReturn(java.util.Optional.of(parkingLot));
