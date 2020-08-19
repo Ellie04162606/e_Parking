@@ -15,7 +15,6 @@ import javax.validation.constraints.NotNull;
 public class CreateOrderRequestDto {
 
   @NotBlank
-
   private String carNumber;
 
   @NotNull
