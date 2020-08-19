@@ -31,17 +31,17 @@ public class CarPositionServiceImpl implements CarPositionService {
 
   @Override
   @Transactional
-  public void reserveParkingPosition(int parkingPositionId) {
+  public ParkingLot reserveParkingPosition(int parkingPositionId) {
     ParkingPosition parkingPosition = parkingPositionRepository.findById(parkingPositionId)
         .orElseThrow(() -> new ParkingLotException(ParkingLotEnum.PARKING_POSITION_NOT_FOUND));
     ParkingLot parkingLot = parkingLotRepository.findById(parkingPosition.getParkingLot().getId())
         .orElseThrow(() -> new ParkingLotException(ParkingLotEnum.PARKING_LOT_NOT_FOUND));
     if (parkingPosition.getStatus() == 0) {
-      parkingLot.setCapicity(parkingLot.getCapicity() - 1);
-      parkingLot.setRemainingAmount(parkingLot.getRemainingAmount() - 1);
-      parkingLotRepository.save(parkingLot);
       parkingPosition.setStatus(1);
       parkingPositionRepository.save(parkingPosition);
+      parkingLot.setCapicity(parkingLot.getCapicity() - 1);
+      parkingLot.setRemainingAmount(parkingLot.getRemainingAmount() - 1);
+      return parkingLotRepository.save(parkingLot);
     } else {
       throw new ParkingLotException(ParkingLotEnum.PARKING_POSITION_IS_NOT_EMPTY);
     }
