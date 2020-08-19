@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 
 @Data
 @NoArgsConstructor
@@ -13,17 +15,18 @@ import javax.validation.constraints.NotBlank;
 public class CreateOrderRequestDto {
 
   @NotBlank
+
   private String carNumber;
 
-  @NotBlank
+  @NotNull
   private Integer carId;
 
-  @NotBlank
+  @NotNull
   private Integer customerId;
 
-  @NotBlank
+  @NotNull
   private Date startTime;
 
-  @NotBlank
+  @NotNull
   private Integer parkingPositionId;
 }
