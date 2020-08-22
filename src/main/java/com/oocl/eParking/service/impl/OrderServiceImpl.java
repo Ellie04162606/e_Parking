@@ -3,7 +3,9 @@ package com.oocl.eParking.service.impl;
 import com.oocl.eParking.dto.CreateOrderRequestDto;
 import com.oocl.eParking.dto.CreateOrderResponseDto;
 import com.oocl.eParking.entity.Order;
+import com.oocl.eParking.enums.OrderEnum;
 import com.oocl.eParking.enums.OrderStatus;
+import com.oocl.eParking.exception.OrderException;
 import com.oocl.eParking.repository.OrderRepository;
 import com.oocl.eParking.service.OrderService;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +26,10 @@ public class OrderServiceImpl implements OrderService {
   @Transactional
   @Override
   public CreateOrderResponseDto createOrder(CreateOrderRequestDto createOrderRequestDto) {
+    Order orderExist = orderRepository.findByCarId(createOrderRequestDto.getCarId());
+    if (orderExist != null && OrderStatus.RESERVED.equals(orderExist.getStatus())) {
+      throw new OrderException(OrderEnum.THIS_CAR_HAS_BEEN_RESERVED);
+    }
     Order orderToSave = Order.builder().carId(createOrderRequestDto.getCarId())
         .customerId(createOrderRequestDto.getCustomerId())
         .createTime(new Date())
@@ -34,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
     Order orderSaved = orderRepository.save(orderToSave);
 
     CreateOrderResponseDto response = new CreateOrderResponseDto();
-    BeanUtils.copyProperties(orderSaved,response);
+    BeanUtils.copyProperties(orderSaved, response);
     response.setOrderNumber(String.valueOf(orderSaved.getId()) + orderSaved.getCustomerId() + orderSaved.getCarId());
     response.setLicenseNumber(createOrderRequestDto.getCarNumber());
 

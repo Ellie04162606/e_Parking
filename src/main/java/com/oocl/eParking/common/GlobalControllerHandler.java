@@ -1,5 +1,6 @@
 package com.oocl.eParking.common;
 
+import com.oocl.eParking.exception.OrderException;
 import com.oocl.eParking.exception.ParkingLotException;
 import com.oocl.eParking.exception.UserException;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,13 @@ public class GlobalControllerHandler {
   @ResponseBody
   String userException(UserException userException) {
     return userException.getMessage();
+  }
+
+  @ExceptionHandler(OrderException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  String orderException(OrderException orderException) {
+    return orderException.getMessage();
   }
 
 }
