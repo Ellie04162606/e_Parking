@@ -11,4 +11,6 @@ public interface CarPositionService {
 
   ParkingLot reserveParkingPosition(int parkingPositionId);
 
+  ParkingLot cancelParkingPosition(int parkingLotId);
+
 }

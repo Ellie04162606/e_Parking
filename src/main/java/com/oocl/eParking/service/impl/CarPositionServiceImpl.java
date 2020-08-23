@@ -39,12 +39,27 @@ public class CarPositionServiceImpl implements CarPositionService {
     if (parkingPosition.getStatus() == 0) {
       parkingPosition.setStatus(1);
       parkingPositionRepository.save(parkingPosition);
-      parkingLot.setCapicity(parkingLot.getCapicity() - 1);
       parkingLot.setRemainingAmount(parkingLot.getRemainingAmount() - 1);
       return parkingLotRepository.save(parkingLot);
     } else {
       throw new ParkingLotException(ParkingLotEnum.PARKING_POSITION_IS_NOT_EMPTY);
     }
+  }
 
+  @Override
+  @Transactional
+  public ParkingLot cancelParkingPosition(int parkingPositionId) {
+    ParkingPosition parkingPosition = parkingPositionRepository.findById(parkingPositionId)
+        .orElseThrow(() -> new ParkingLotException(ParkingLotEnum.PARKING_POSITION_NOT_FOUND));
+    ParkingLot parkingLot = parkingLotRepository.findById(parkingPosition.getParkingLot().getId())
+        .orElseThrow(() -> new ParkingLotException(ParkingLotEnum.PARKING_LOT_NOT_FOUND));
+    if (parkingPosition.getStatus() == 1) {
+      parkingPosition.setStatus(0);
+      parkingPositionRepository.save(parkingPosition);
+      parkingLot.setRemainingAmount(parkingLot.getRemainingAmount() + 1);
+      return parkingLotRepository.save(parkingLot);
+    } else {
+      throw new ParkingLotException(ParkingLotEnum.PARKING_POSITION_IS_NOT_EMPTY);
+    }
   }
 }

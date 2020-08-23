@@ -25,9 +25,8 @@ import javax.websocket.server.ServerEndpoint;
 public class WebSocketService {
 
   private static final Map<String, Session> clients = new ConcurrentHashMap<>();
-  private final Logger log = LoggerFactory.getLogger(WebSocketService.class);
-
   private static CarPositionService carPositionService;
+  private final Logger log = LoggerFactory.getLogger(WebSocketService.class);
 
   @Autowired
   public void setCarPositionService(CarPositionService carPositionService) {
@@ -55,13 +54,25 @@ public class WebSocketService {
 
   @OnMessage
   public void onMessage(String message) {
-    Gson gson = new Gson();
-    try {
-      ParkingLot parkingLot = carPositionService.reserveParkingPosition(Integer.parseInt(message));
-      List<ParkingPosition> allParkingPosition = carPositionService.getAllParkingPosition(parkingLot.getId());
-      sendAll(gson.toJson(allParkingPosition));
-    } catch (ParkingLotException parkingLotException) {
-      log.error(parkingLotException.getMessage());
+    if (message.length() > 7) {
+      int positionId = Integer.parseInt(message.split(" ")[1]);
+      Gson gson = new Gson();
+      try {
+        ParkingLot parkingLot = carPositionService.cancelParkingPosition(positionId);
+        List<ParkingPosition> allParkingPosition = carPositionService.getAllParkingPosition(parkingLot.getId());
+        sendAll(gson.toJson(allParkingPosition));
+      } catch (ParkingLotException parkingLotException) {
+        log.error(parkingLotException.getMessage());
+      }
+    } else {
+      Gson gson = new Gson();
+      try {
+        ParkingLot parkingLot = carPositionService.reserveParkingPosition(Integer.parseInt(message));
+        List<ParkingPosition> allParkingPosition = carPositionService.getAllParkingPosition(parkingLot.getId());
+        sendAll(gson.toJson(allParkingPosition));
+      } catch (ParkingLotException parkingLotException) {
+        log.error(parkingLotException.getMessage());
+      }
     }
   }
 
