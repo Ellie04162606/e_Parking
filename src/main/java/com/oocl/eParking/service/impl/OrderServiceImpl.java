@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Objects;
 import javax.transaction.Transactional;
 
 @Service
@@ -26,8 +27,8 @@ public class OrderServiceImpl implements OrderService {
   @Transactional
   @Override
   public CreateOrderResponseDto createOrder(CreateOrderRequestDto createOrderRequestDto) {
-    Order orderExist = orderRepository.findByCarId(createOrderRequestDto.getCarId());
-    if (orderExist != null && OrderStatus.RESERVED.equals(orderExist.getStatus())) {
+    Integer count = orderRepository.countByCarIdAndStatus(createOrderRequestDto.getCarId(), OrderStatus.RESERVED);
+    if (Objects.nonNull(count) && count > 0) {
       throw new OrderException(OrderEnum.THIS_CAR_HAS_BEEN_RESERVED);
     }
     Order orderToSave = Order.builder().carId(createOrderRequestDto.getCarId())
